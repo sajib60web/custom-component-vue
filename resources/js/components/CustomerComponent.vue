@@ -3,7 +3,7 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">Example Component</div>
+                    <div class="card-header">Customer List</div>
                     <div class="card-body">
                         <table
                             class="table table-hover table-borderd table-striped"
@@ -16,19 +16,20 @@
                                     <th>Phone</th>
                                     <th>Address</th>
                                     <th>Total</th>
-                                    <th>Image</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td scope="row">1</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                <tr
+                                    v-for="(customer, index) in customers"
+                                    :key="customer.id"
+                                >
+                                    <td>{{ index + 1 }}</td>
+                                    <td>{{ customer.name }}</td>
+                                    <td>{{ customer.email }}</td>
+                                    <td>{{ customer.phone }}</td>
+                                    <td>{{ customer.address }}</td>
+                                    <td>{{ customer.total }}</td>
                                     <td>
                                         <button
                                             type="button"
@@ -50,13 +51,34 @@
                 </div>
             </div>
         </div>
+        <vue-progress-bar></vue-progress-bar>
     </div>
 </template>
 
 <script>
 export default {
+    data() {
+        return {
+            customers: [],
+        };
+    },
     mounted() {
-        console.log("customer Component mounted.");
+        this.getData();
+    },
+    methods: {
+        getData() {
+            this.$Progress.start();
+            axios
+                .get("/api/customers")
+                .then((response) => {
+                    this.customers = response.data.data;
+                    this.$Progress.finish();
+                })
+                .catch((e) => {
+                    console.log(e);
+                    this.$Progress.fail();
+                });
+        },
     },
 };
 </script>
