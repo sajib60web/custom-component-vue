@@ -20,3 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('customers', CustomerController::class);
+Route::get('search/customer/{field}/{query}', [CustomerController::class, 'search']);
