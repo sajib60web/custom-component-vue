@@ -2,6 +2,6 @@
 
 @section('content')
 <div class="container">
-    <customer-component></customer-component>
+    <router-view></router-view>
 </div>
 @endsection

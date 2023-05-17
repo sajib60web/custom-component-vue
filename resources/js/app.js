@@ -7,6 +7,7 @@
 require("./bootstrap");
 
 window.Vue = require("vue").default;
+import router from "./router";
 
 import VueProgressBar from "vue-progressbar";
 const VueProgressBarOptions = {
@@ -24,15 +25,7 @@ const VueProgressBarOptions = {
 };
 Vue.use(VueProgressBar, VueProgressBarOptions);
 
-Vue.component(
-    "example-component",
-    require("./components/ExampleComponent.vue").default
-);
-Vue.component(
-    "customer-component",
-    require("./components/CustomerComponent.vue").default
-);
-
 const app = new Vue({
     el: "#app",
+    router,
 });
