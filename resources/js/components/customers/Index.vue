@@ -4,6 +4,34 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">Customer List</div>
+                    <div class="m-3">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <strong>Search By: </strong>
+                            </div>
+                            <div class="col-md-3">
+                                <select
+                                    v-model="queryField"
+                                    class="form-select"
+                                >
+                                    <option value="">Select Field</option>
+                                    <option value="name">Name</option>
+                                    <option value="email">Email</option>
+                                    <option value="phone">Phone</option>
+                                    <option value="address">Address</option>
+                                    <option value="total">Total</option>
+                                </select>
+                            </div>
+                            <div class="col-md-7">
+                                <input
+                                    type="text"
+                                    v-model="query"
+                                    class="form-control"
+                                    placeholder="Search"
+                                />
+                            </div>
+                        </div>
+                    </div>
                     <div class="card-body">
                         <table
                             class="table table-hover table-borderd table-striped"
@@ -51,7 +79,7 @@
                             v-if="pagination.last_page > 1"
                             :pagination="pagination"
                             :offset="5"
-                            @paginate="getData()"
+                            @paginate="query === '' ? getData() : searchData()"
                         >
                         </pagination>
                     </div>
@@ -70,10 +98,14 @@ export default {
             pagination: {
                 current_page: 1,
             },
+            // Search field
+            queryField: "",
+            query: "",
         };
     },
     mounted() {
         this.getData();
+        console.log(this.query);
     },
     methods: {
         getData() {
@@ -83,13 +115,48 @@ export default {
                 .then((response) => {
                     this.customers = response.data.data;
                     this.pagination = response.data.meta;
-                    console.log(response);
+                    // console.log(response);
                     this.$Progress.finish();
                 })
                 .catch((e) => {
                     console.log(e);
                     this.$Progress.fail();
                 });
+        },
+        searchData() {
+            this.$Progress.start();
+            axios
+                .get(
+                    "/api/search/customer/" +
+                        this.queryField +
+                        "/" +
+                        this.query +
+                        "?page=" +
+                        this.pagination.current_page
+                )
+                .then((response) => {
+                    this.customers = response.data.data;
+                    this.pagination = response.data.meta;
+                    // console.log(response);
+                    this.$Progress.finish();
+                })
+                .catch((e) => {
+                    console.log(e);
+                    this.$Progress.fail();
+                });
+        },
+    },
+    watch: {
+        query: function (newQ, old) {
+            if (this.queryField == "") {
+                alert("Places select field");
+                return;
+            }
+            if (newQ === "") {
+                this.getData();
+            } else {
+                this.searchData();
+            }
         },
     },
 };

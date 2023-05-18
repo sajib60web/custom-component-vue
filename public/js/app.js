@@ -5333,11 +5333,15 @@ __webpack_require__.r(__webpack_exports__);
       customers: [],
       pagination: {
         current_page: 1
-      }
+      },
+      // Search field
+      queryField: "",
+      query: ""
     };
   },
   mounted: function mounted() {
     this.getData();
+    console.log(this.query);
   },
   methods: {
     getData: function getData() {
@@ -5346,12 +5350,38 @@ __webpack_require__.r(__webpack_exports__);
       axios.get("/api/customers?page=" + this.pagination.current_page).then(function (response) {
         _this.customers = response.data.data;
         _this.pagination = response.data.meta;
-        console.log(response);
+        // console.log(response);
         _this.$Progress.finish();
       })["catch"](function (e) {
         console.log(e);
         _this.$Progress.fail();
       });
+    },
+    searchData: function searchData() {
+      var _this2 = this;
+      this.$Progress.start();
+      axios.get("/api/search/customer/" + this.queryField + "/" + this.query + "?page=" + this.pagination.current_page).then(function (response) {
+        _this2.customers = response.data.data;
+        _this2.pagination = response.data.meta;
+        // console.log(response);
+        _this2.$Progress.finish();
+      })["catch"](function (e) {
+        console.log(e);
+        _this2.$Progress.fail();
+      });
+    }
+  },
+  watch: {
+    query: function query(newQ, old) {
+      if (this.queryField == "") {
+        alert("Places select field");
+        return;
+      }
+      if (newQ === "") {
+        this.getData();
+      } else {
+        this.searchData();
+      }
     }
   }
 });
@@ -5454,13 +5484,85 @@ var render = function render() {
   }, [_c("div", {
     staticClass: "card-header"
   }, [_vm._v("Customer List")]), _vm._v(" "), _c("div", {
+    staticClass: "m-3"
+  }, [_c("div", {
+    staticClass: "row"
+  }, [_vm._m(0), _vm._v(" "), _c("div", {
+    staticClass: "col-md-3"
+  }, [_c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.queryField,
+      expression: "queryField"
+    }],
+    staticClass: "form-select",
+    on: {
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.queryField = $event.target.multiple ? $$selectedVal : $$selectedVal[0];
+      }
+    }
+  }, [_c("option", {
+    attrs: {
+      value: ""
+    }
+  }, [_vm._v("Select Field")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "name"
+    }
+  }, [_vm._v("Name")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "email"
+    }
+  }, [_vm._v("Email")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "phone"
+    }
+  }, [_vm._v("Phone")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "address"
+    }
+  }, [_vm._v("Address")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "total"
+    }
+  }, [_vm._v("Total")])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-7"
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.query,
+      expression: "query"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "text",
+      placeholder: "Search"
+    },
+    domProps: {
+      value: _vm.query
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.query = $event.target.value;
+      }
+    }
+  })])])]), _vm._v(" "), _c("div", {
     staticClass: "card-body"
   }, [_c("table", {
     staticClass: "table table-hover table-borderd table-striped"
-  }, [_vm._m(0), _vm._v(" "), _c("tbody", _vm._l(_vm.customers, function (customer, index) {
+  }, [_vm._m(1), _vm._v(" "), _c("tbody", _vm._l(_vm.customers, function (customer, index) {
     return _c("tr", {
       key: customer.id
-    }, [_c("td", [_vm._v(_vm._s(index + 1))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(customer.name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(customer.email))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(customer.phone))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(customer.total))]), _vm._v(" "), _vm._m(1, true)]);
+    }, [_c("td", [_vm._v(_vm._s(index + 1))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(customer.name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(customer.email))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(customer.phone))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(customer.total))]), _vm._v(" "), _vm._m(2, true)]);
   }), 0)]), _vm._v(" "), _vm.pagination.last_page > 1 ? _c("pagination", {
     attrs: {
       pagination: _vm.pagination,
@@ -5468,12 +5570,18 @@ var render = function render() {
     },
     on: {
       paginate: function paginate($event) {
-        return _vm.getData();
+        _vm.query === "" ? _vm.getData() : _vm.searchData();
       }
     }
   }) : _vm._e()], 1)])])]), _vm._v(" "), _c("vue-progress-bar")], 1);
 };
 var staticRenderFns = [function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "col-md-2"
+  }, [_c("strong", [_vm._v("Search By: ")])]);
+}, function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("thead", [_c("tr", [_c("th", [_vm._v("ID")]), _vm._v(" "), _c("th", [_vm._v("Name")]), _vm._v(" "), _c("th", [_vm._v("Email")]), _vm._v(" "), _c("th", [_vm._v("Phone")]), _vm._v(" "), _c("th", [_vm._v("Total")]), _vm._v(" "), _c("th", [_vm._v("Action")])])]);
