@@ -24,6 +24,10 @@ const VueProgressBarOptions = {
     inverse: false,
 };
 Vue.use(VueProgressBar, VueProgressBarOptions);
+Vue.component(
+    "pagination",
+    require("./components/partials/PaginationComponent.vue").default
+);
 
 const app = new Vue({
     el: "#app",
