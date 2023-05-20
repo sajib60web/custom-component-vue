@@ -13,17 +13,16 @@
                                     <button
                                         type="button"
                                         class="btn btn-primary"
+                                        @click="create"
                                     >
-                                        Add New Customer
-                                        <i class="fas fa-plus"></i>
+                                        <i class="fa fa-plus"></i> Add New
                                     </button>
                                     <button
                                         type="button"
                                         class="btn btn-primary"
                                         @click="reload"
                                     >
-                                        Reload
-                                        <i class="fas fa-sync"></i>
+                                        <i class="fa fa-refresh"></i> Reload
                                     </button>
                                 </div>
                             </div>
@@ -85,15 +84,17 @@
                                     <td>
                                         <button
                                             type="button"
-                                            class="btn btn-primary"
+                                            class="btn btn-primary btn-sm"
+                                            @click="edit(customer)"
                                         >
-                                            Edit
+                                            <i class="fa fa-edit"></i>
                                         </button>
                                         <button
                                             type="button"
-                                            class="btn btn-danger"
+                                            class="btn btn-danger btn-sm"
+                                            @click="destroy(customer)"
                                         >
-                                            Delete
+                                            <i class="fa fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -112,10 +113,294 @@
         </div>
         <vue-progress-bar></vue-progress-bar>
         <vue-snotify></vue-snotify>
+        <!-- Start Add New Customer Modal -->
+        <div
+            class="modal fade"
+            id="exampleModal"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">
+                            Add New Customer
+                        </h1>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        ></button>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="store()" method="post">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    v-model="form.name"
+                                    name="name"
+                                    id="name"
+                                    placeholder="Enter Your Name"
+                                />
+                                <span
+                                    class="error"
+                                    v-if="form.errors.has('name')"
+                                    v-html="form.errors.get('name')"
+                                >
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    v-model="form.email"
+                                    name="email"
+                                    id="email"
+                                    placeholder="Enter Your email"
+                                />
+                                <span
+                                    class="error"
+                                    v-if="form.errors.has('email')"
+                                    v-html="form.errors.get('email')"
+                                >
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    v-model="form.phone"
+                                    name="phone"
+                                    id="phone"
+                                    placeholder="Enter Your phone"
+                                />
+                                <span
+                                    class="error"
+                                    v-if="form.errors.has('phone')"
+                                    v-html="form.errors.get('phone')"
+                                >
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <textarea
+                                    class="form-control"
+                                    v-model="form.address"
+                                    name="address"
+                                    id="address"
+                                    rows="3"
+                                ></textarea>
+                                <span
+                                    class="error"
+                                    v-if="form.errors.has('address')"
+                                    v-html="form.errors.get('address')"
+                                >
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label for="total">Total</label>
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    v-model="form.total"
+                                    name="total"
+                                    id="total"
+                                    placeholder="Enter Your Amount"
+                                />
+                                <span
+                                    class="error"
+                                    v-if="form.errors.has('total')"
+                                    v-html="form.errors.get('total')"
+                                >
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label for="image">Image</label><br />
+                                <input
+                                    type="file"
+                                    @change="onFileChange"
+                                    class="form-control-file"
+                                    name="image"
+                                    id="image"
+                                    placeholder="image"
+                                />
+                                <img
+                                    style="width: 150px"
+                                    :src="imagePreview"
+                                    alt=""
+                                />
+                            </div>
+                            <div class="modal-footer">
+                                <button
+                                    type="button"
+                                    class="btn btn-danger"
+                                    data-bs-dismiss="modal"
+                                >
+                                    Close
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Save changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Add New Customer Modal -->
+
+        <!-- Start Edit Customer Modal -->
+        <div
+            class="modal fade"
+            id="EditModal"
+            tabindex="-1"
+            aria-labelledby="EditModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="EditModalLabel">
+                            Update Customer
+                        </h1>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        ></button>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="update()" method="post">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    v-model="form.name"
+                                    name="name"
+                                    id="name"
+                                    placeholder="Enter Your Name"
+                                />
+                                <span
+                                    class="error"
+                                    v-if="form.errors.has('name')"
+                                    v-html="form.errors.get('name')"
+                                >
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    v-model="form.email"
+                                    name="email"
+                                    id="email"
+                                    placeholder="Enter Your email"
+                                />
+                                <span
+                                    class="error"
+                                    v-if="form.errors.has('email')"
+                                    v-html="form.errors.get('email')"
+                                >
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    v-model="form.phone"
+                                    name="phone"
+                                    id="phone"
+                                    placeholder="Enter Your phone"
+                                />
+                                <span
+                                    class="error"
+                                    v-if="form.errors.has('phone')"
+                                    v-html="form.errors.get('phone')"
+                                >
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <textarea
+                                    class="form-control"
+                                    v-model="form.address"
+                                    name="address"
+                                    id="address"
+                                    rows="3"
+                                ></textarea>
+                                <span
+                                    class="error"
+                                    v-if="form.errors.has('address')"
+                                    v-html="form.errors.get('address')"
+                                >
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label for="total">Total</label>
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    v-model="form.total"
+                                    name="total"
+                                    id="total"
+                                    placeholder="Enter Your Amount"
+                                />
+                                <span
+                                    class="error"
+                                    v-if="form.errors.has('total')"
+                                    v-html="form.errors.get('total')"
+                                >
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label for="image">Image</label><br />
+                                <input
+                                    type="file"
+                                    @change="onFileChange"
+                                    class="form-control-file"
+                                    name="image"
+                                    id="image"
+                                    placeholder="image"
+                                />
+                                <img
+                                    style="width: 150px"
+                                    :src="imagePreview"
+                                    alt=""
+                                />
+                            </div>
+                            <div class="modal-footer">
+                                <button
+                                    type="button"
+                                    class="btn btn-danger"
+                                    data-bs-dismiss="modal"
+                                >
+                                    Close
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Save changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Edit Customer Modal -->
     </div>
 </template>
 
 <script>
+import Form from "vform";
 export default {
     data() {
         return {
@@ -126,6 +411,16 @@ export default {
             // Search field
             queryField: "name",
             query: "",
+            imagePreview: null,
+            form: new Form({
+                id: "",
+                name: "",
+                email: "",
+                phone: "",
+                address: "",
+                total: "",
+                image: "",
+            }),
         };
     },
     mounted() {
@@ -140,7 +435,6 @@ export default {
                 .then((response) => {
                     this.customers = response.data.data;
                     this.pagination = response.data.meta;
-                    // console.log(response);
                     this.$Progress.finish();
                 })
                 .catch((e) => {
@@ -177,6 +471,123 @@ export default {
             this.queryField = "name";
             this.$snotify.success("Data Successfully Refresh", "Success");
         },
+        onFileChange(event) {
+            this.form.image = event.target.files[0];
+            let reader = new FileReader();
+            reader.addEventListener(
+                "load",
+                function () {
+                    this.imagePreview = reader.result;
+                }.bind(this),
+                false
+            );
+            if (this.form.image) {
+                if (/\.(jpe?g|png|gif)$/i.test(this.form.image.name)) {
+                    reader.readAsDataURL(this.form.image);
+                }
+            }
+        },
+        create() {
+            this.form.reset();
+            this.form.clear();
+            $("#exampleModal").modal("show");
+        },
+        store() {
+            this.$Progress.start();
+            this.form.busy = true;
+            this.form
+                .post("/api/customers")
+                .then((response) => {
+                    this.getData();
+                    $("#exampleModal").modal("hide");
+                    if (this.form.successful) {
+                        this.$Progress.finish();
+                        this.$snotify.success("Customer Successfully Saved");
+                    } else {
+                        this.$Progress.fail();
+                        this.$snotify.error(
+                            "Something went wrong try again later.",
+                            "Error"
+                        );
+                    }
+                })
+                .catch((error) => {
+                    this.$Progress.fail();
+                    console.log(error);
+                });
+        },
+        edit(customer) {
+            this.form.reset();
+            this.form.clear();
+            this.form.fill(customer);
+            $("#EditModal").modal("show");
+        },
+        update() {
+            this.$Progress.start();
+            this.form.busy = true;
+            this.form
+                .put("/api/customers/" + this.form.id)
+                .then((response) => {
+                    this.getData();
+                    $("#EditModal").modal("hide");
+                    if (this.form.successful) {
+                        this.$Progress.finish();
+                        this.$snotify.success("Customer Update Successfully");
+                    } else {
+                        this.$Progress.fail();
+                        this.$snotify.error(
+                            "Something went wrong try again later.",
+                            "Error"
+                        );
+                    }
+                })
+                .catch(function (error) {
+                    this.$Progress.fail();
+                    console.log(error);
+                });
+        },
+        destroy(customer) {
+            this.$snotify.clear();
+            this.$snotify.confirm(
+                "You can not recover this data again!",
+                "Are You Sure?",
+                {
+                    showProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    buttons: [
+                        {
+                            text: "Yes",
+                            action: (toast) => {
+                                this.$snotify.remove(toast.id);
+                                this.$Progress.start();
+                                this.form
+                                    .delete("/api/customers/" + customer.id)
+                                    .then((response) => {
+                                        this.getData();
+                                        this.$Progress.finish();
+                                        this.$snotify.success(
+                                            "Customer Deleted Successfully"
+                                        );
+                                    })
+                                    .catch(function (error) {
+                                        this.$Progress.fail();
+                                        console.log(error);
+                                    });
+                            },
+                            bold: true,
+                        },
+                        {
+                            text: "No",
+                            action: (toast) => {
+                                this.$snotify.remove(toast.id);
+                            },
+                            bold: true,
+                        },
+                    ],
+                }
+            );
+        },
     },
     watch: {
         query: function (newQ, old) {
@@ -193,3 +604,11 @@ export default {
     },
 };
 </script>
+<style>
+.form-group {
+    margin-bottom: 10px;
+}
+.error {
+    color: red;
+}
+</style>

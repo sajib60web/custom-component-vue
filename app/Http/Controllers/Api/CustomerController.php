@@ -41,6 +41,14 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'name' => 'required|max:255',
+            'email' => 'required|max:255',
+            'phone' => 'required|max:255',
+            'address' => 'required|max:255',
+            'total' => 'required|max:255',
+        ]);
+
         $customer = new Customer();
         $customer->name = $request->name;
         $customer->email = $request->email;
@@ -70,6 +78,14 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
+        $this->validate($request, [
+            'name' => 'required|max:255',
+            'email' => 'required|max:255',
+            'phone' => 'required|max:255',
+            'address' => 'required|max:255',
+            'total' => 'required|max:255',
+        ]);
+
         $customer->name = $request->name;
         $customer->email = $request->email;
         $customer->phone = $request->phone;
