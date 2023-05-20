@@ -17,9 +17,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::view("/{any}", "home")->where("any", ".*");
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 Auth::routes();
 

@@ -3,7 +3,32 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">Customer List</div>
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col">
+                                <h4>Customer List</h4>
+                            </div>
+                            <div class="col">
+                                <div class="float-end">
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary"
+                                    >
+                                        Add New Customer
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary"
+                                        @click="reload"
+                                    >
+                                        Reload
+                                        <i class="fas fa-sync"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="m-3">
                         <div class="row">
                             <div class="col-md-2">
@@ -14,7 +39,6 @@
                                     v-model="queryField"
                                     class="form-select"
                                 >
-                                    <option value="">Select Field</option>
                                     <option value="name">Name</option>
                                     <option value="email">Email</option>
                                     <option value="phone">Phone</option>
@@ -87,6 +111,7 @@
             </div>
         </div>
         <vue-progress-bar></vue-progress-bar>
+        <vue-snotify></vue-snotify>
     </div>
 </template>
 
@@ -99,7 +124,7 @@ export default {
                 current_page: 1,
             },
             // Search field
-            queryField: "",
+            queryField: "name",
             query: "",
         };
     },
@@ -144,6 +169,13 @@ export default {
                     console.log(e);
                     this.$Progress.fail();
                 });
+        },
+        reload() {
+            this.$Progress.start();
+            this.getData();
+            this.query = "";
+            this.queryField = "name";
+            this.$snotify.success("Data Successfully Refresh", "Success");
         },
     },
     watch: {

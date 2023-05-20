@@ -29,6 +29,15 @@ Vue.component(
     require("./components/partials/PaginationComponent.vue").default
 );
 
+// Import Snotify Plugin
+import Snotify, { SnotifyPosition } from "vue-snotify";
+const Snotifyoptions = {
+    toast: {
+        position: SnotifyPosition.rightTop,
+    },
+};
+Vue.use(Snotify, Snotifyoptions);
+
 const app = new Vue({
     el: "#app",
     router,
